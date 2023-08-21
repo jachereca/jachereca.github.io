@@ -1,0 +1,7 @@
+<svg width="10cm" height="10cm" xmlns="http://www.w3.org/2000/svg">
+    <!-- Fond blanc (même si par défaut, le fond est généralement déjà blanc) -->
+    <rect x="0" y="0" width="10cm" height="10cm" fill="white" />
+
+    <!-- Carré noir de 2 cm de côté -->
+    <rect x="4cm" y="4cm" width="2cm" height="2cm" fill="black" />
+</svg>
