@@ -27,6 +27,11 @@ md"""
 # Mini-laboratoire sur la diffusion
 """
 
+# ╔═╡ 478ff949-8c89-4b66-a659-446c9c85fef0
+html"""
+<img src="https://jachereca.github.io/files/randomwalk.gif"  width="450" alt = "Random walk"/>
+"""
+
 # ╔═╡ c8f88c83-302f-40d5-b045-d7ec7ccda533
 md"""
 Dans ce mini-laboratoire, vous aurez l'opportunité d'évaluer le processus de **diffusion** de différentes particules dans l'eau (le solvent). 
@@ -36,7 +41,7 @@ En premier lieu, vous pouvez sélectionner s'il s'agit de la diffusion de partic
 
 # ╔═╡ 53ed61f7-1c19-4d2f-8c75-d32fc47019cf
 md"""
-1. Votre choix: Diffusion de  $(@bind type_diff PlutoUI.Select(["Particules","Molécules"]))  
+1. Votre choix: diffusion de  $(@bind type_diff PlutoUI.Select(["Particules","Molécules"]))  
 """
 
 # ╔═╡ 0b3965ba-35d6-4b35-a616-fd7061984c54
@@ -77,6 +82,15 @@ begin
 	xmax = maximum(discrete_x);
 	tmin = minimum(discrete_t);
 	tmax = maximum(discrete_t);
+	
+	X = solu[:, 101];
+	pos = argmin(i -> X[i],findall(x -> x >= 0.75, X));
+	m = (X[pos+1]-X[pos])/(discrete_t[pos+1]-discrete_t[pos])
+	b = (X[pos]*discrete_t[pos+1]-X[pos+1]*discrete_t[pos])/(discrete_t[pos+1]-discrete_t[pos]);
+	t75 = (0.75-b)/m;
+	md""" 
+
+	"""
 end
 
 # ╔═╡ 25d3474d-8786-4ac3-84c0-009f03f96926
@@ -87,7 +101,7 @@ md"""Utilisez cette glissière pour avancer/reculer le temps"""
 
 # ╔═╡ caffc167-db08-42a9-a35d-fac7f1335105
 md"""
-### t = $(discrete_t[val_t]) ms
+#### t = $(discrete_t[val_t]) ms
 """
 
 # ╔═╡ 192386bf-6377-4278-bfa1-bdaca195cc46
@@ -107,12 +121,57 @@ Graphique de la variation temporelle du point central (cercle vert dans le graph
 
 # ╔═╡ 4ee1d935-d899-4d3d-9f24-7ab1fcce092f
 begin
-	str_tmp = @sprintf("t = %.2f s , [conc] = %.3f",discrete_t[val_t],solu[val_t,101])
+	str_tmp = @sprintf("t = %.2f s , [conc] = %.3f , t_{0.75} =  %.3f s",discrete_t[val_t],solu[val_t,101], t75)
 	
 	Plots.plot(discrete_t, solu[:, 101], ylim = (0,1.1), xlim = (tmin, 1.1*tmax), label="x = 0.0", xlabel="t (s)", ylabel = "[conc]" )
 	
 	Plots.scatter!(discrete_t[val_t:val_t], solu[val_t, 101:101], label="", mc=:green, ms=6, ma=0.5,title=str_tmp)
 end
+
+# ╔═╡ df7c5b7b-e0ca-476b-8e40-4e3650c65e9d
+md"""
+### Effet du rayon effectif *r* 
+Pour la première partie du mini-labo, veuillez remplir le tableau ci-bas.
+"""
+
+# ╔═╡ 35640b9b-fd51-4630-9db3-002c2a6f54e1
+md"""
+| *r*    | ``t_{75\%}`` 
+| -------- | ------- |
+| 0.001  | $(@bind s1 TextField()) |
+| 0.01  | $(@bind s2 TextField()) |
+| 0.1  | $(@bind s3 TextField()) |
+
+"""
+
+# ╔═╡ 58d7b3ee-ccae-45f2-a2f4-3391f2008de7
+begin
+	if ~isempty(s1) & ~isempty(s2) & ~isempty(s3)
+		Plots.scatter([0.001 0.01 0.1], [parse(Float64,s1) parse(Float64,s2) parse(Float64,s3)], label="", mc=:red, ms=6, ma=0.5,title="", xlabel="r", ylabel = "t_{0.75}" )
+	end
+end
+
+# ╔═╡ 1b339489-8cd3-4a4d-b201-ce7522a01640
+begin
+
+
+md"""
+
+| *r*    | ``t_{75\%}``
+| -------- | ------- |
+| 0.001  | $s1    |
+| 0.01 | $s2     |
+| 0.1    | $s3   |
+"""
+
+end
+
+# ╔═╡ e040e91d-2f96-491e-a7b6-dd8be19d8c5f
+md"""
+
+### Classification des molécules 
+Pour la seconde partie du mini-labo, veuillez évaluer les molécules.
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1178,8 +1237,9 @@ version = "1.4.1+0"
 """
 
 # ╔═╡ Cell order:
-# ╟─1a34fe34-c310-4e71-afa7-7d3f46bfb465
 # ╟─084dd159-bd86-4c0d-b976-b7d615668a0c
+# ╟─1a34fe34-c310-4e71-afa7-7d3f46bfb465
+# ╟─478ff949-8c89-4b66-a659-446c9c85fef0
 # ╟─c8f88c83-302f-40d5-b045-d7ec7ccda533
 # ╟─53ed61f7-1c19-4d2f-8c75-d32fc47019cf
 # ╟─0b3965ba-35d6-4b35-a616-fd7061984c54
@@ -1191,5 +1251,10 @@ version = "1.4.1+0"
 # ╟─192386bf-6377-4278-bfa1-bdaca195cc46
 # ╟─6b1d62ab-abf1-440a-a2b5-e676a19cc5fb
 # ╟─4ee1d935-d899-4d3d-9f24-7ab1fcce092f
+# ╟─df7c5b7b-e0ca-476b-8e40-4e3650c65e9d
+# ╟─35640b9b-fd51-4630-9db3-002c2a6f54e1
+# ╟─58d7b3ee-ccae-45f2-a2f4-3391f2008de7
+# ╟─1b339489-8cd3-4a4d-b201-ce7522a01640
+# ╠═e040e91d-2f96-491e-a7b6-dd8be19d8c5f
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
