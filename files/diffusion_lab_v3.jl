@@ -20,6 +20,11 @@ begin
 	using PlutoUI
 	using Plots
 	using Printf
+
+	snap_url = "https://jachereca.github.io/files/screen_labo_diff_01.png";
+		md""" 
+
+	"""
 end
 
 # ╔═╡ 084dd159-bd86-4c0d-b976-b7d615668a0c
@@ -158,7 +163,7 @@ begin
 md"""
 
 | *r*    | ``t_{75\%}``
-| -------- | ------- |
+| :-------- | -------: |
 | 0.001  | $s1    |
 | 0.01 | $s2     |
 | 0.1    | $s3   |
@@ -167,10 +172,31 @@ md"""
 end
 
 # ╔═╡ e040e91d-2f96-491e-a7b6-dd8be19d8c5f
-md"""
 
+md"""
 ### Classification des molécules 
-Pour la seconde partie du mini-labo, veuillez évaluer les molécules.
+	
+Pour la seconde partie du mini-labo, veuillez évaluer les molécules. Retourner dans la section plus haut (une image de la section est affichée ci-bas. 
+"""
+
+# ╔═╡ 571b2e4e-e97b-40c9-9664-ed4d8c5a861a
+html"""
+<hr/>
+"""
+
+# ╔═╡ 3358963c-d1a3-4617-a0f2-799120548496
+md"""
+$(Resource(snap_url, :width => 300))
+"""
+
+# ╔═╡ 8915b484-6eb9-4e43-976e-8818f93b9608
+html"""
+<hr/>
+"""
+
+# ╔═╡ ba7094b2-5feb-4da9-b9fa-547725592f23
+md"""
+Choississez "Molécules" dans le menu déroulant. Explorez par la suite les résultats pour l'ensemble des 4 choix disponibles. Notez les valeurs de ```t_{75%}``` que vous obtenez pour chacune des 4 molécules.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -1255,6 +1281,10 @@ version = "1.4.1+0"
 # ╟─35640b9b-fd51-4630-9db3-002c2a6f54e1
 # ╟─58d7b3ee-ccae-45f2-a2f4-3391f2008de7
 # ╟─1b339489-8cd3-4a4d-b201-ce7522a01640
-# ╠═e040e91d-2f96-491e-a7b6-dd8be19d8c5f
+# ╟─e040e91d-2f96-491e-a7b6-dd8be19d8c5f
+# ╟─571b2e4e-e97b-40c9-9664-ed4d8c5a861a
+# ╟─3358963c-d1a3-4617-a0f2-799120548496
+# ╟─8915b484-6eb9-4e43-976e-8818f93b9608
+# ╟─ba7094b2-5feb-4da9-b9fa-547725592f23
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
