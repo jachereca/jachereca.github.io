@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.27
+# v0.19.9
 
 using Markdown
 using InteractiveUtils
@@ -16,6 +16,9 @@ end
 
 # ╔═╡ 97e807b2-9237-11eb-31ef-6fe0d4cc94d3
 using Plots, PlutoUI, BenchmarkTools
+
+# ╔═╡ bd6d354c-e93e-4810-a5ac-61c0ec27cb36
+
 
 # ╔═╡ 3649f170-923a-11eb-321c-cf95849cc044
 html"""
@@ -149,9 +152,6 @@ overflow-x: hidden;
 # ╔═╡ d420d492-91d9-11eb-056d-33cc8f0aed74
 abstract type Walker end
 
-# ╔═╡ d0f81f28-91d9-11eb-2e79-61461ef5b132
-position(w::Walker) = w.pos;
-
 # ╔═╡ 23b84ce2-91da-11eb-01f8-c308ac4d1c7a
 struct Walker2D <: Walker
 	x::Int
@@ -164,11 +164,11 @@ position(w::Walker2D) = (w.x, w.y);
 # ╔═╡ 3ad5a93c-91db-11eb-3227-c96bf8fd2206
 update(w::Walker2D, step::Vector) = Walker2D(w.x + step[1], w.y + step[2]);
 
+# ╔═╡ d0f81f28-91d9-11eb-2e79-61461ef5b132
+position(w::Walker) = w.pos;
+
 # ╔═╡ 5b972296-91da-11eb-29b1-074f3926181e
 step(w::Walker2D) = rand( [ [1, 0], [0, 1], [-1, 0], [0, -1] ] );
-
-# ╔═╡ 3c3971e2-91da-11eb-384c-01c627318bdc
-update(w::W, step) where {W <: Walker} = W(position(w) + step)
 
 # ╔═╡ cb0ef266-91d5-11eb-314b-0545c0c817d0
 function trajectory(w::W, N) where {W}   # W is a type parameter
@@ -197,6 +197,9 @@ begin
 	
 end
 
+
+# ╔═╡ 3c3971e2-91da-11eb-384c-01c627318bdc
+update(w::W, step) where {W <: Walker} = W(position(w) + step)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1265,6 +1268,7 @@ version = "1.4.1+0"
 """
 
 # ╔═╡ Cell order:
+# ╠═bd6d354c-e93e-4810-a5ac-61c0ec27cb36
 # ╟─3649f170-923a-11eb-321c-cf95849cc044
 # ╟─97e807b2-9237-11eb-31ef-6fe0d4cc94d3
 # ╟─ff1aca1e-91e7-11eb-343e-0f89d9570b06
@@ -1277,14 +1281,14 @@ version = "1.4.1+0"
 # ╟─b62c4af8-9232-11eb-2f66-dd27dcb87d20
 # ╟─fedc3563-a0cf-4ab5-9643-c465a683661f
 # ╟─016c7884-a0cc-40c6-b5fc-93b2c30f667b
+# ╟─d420d492-91d9-11eb-056d-33cc8f0aed74
+# ╟─23b84ce2-91da-11eb-01f8-c308ac4d1c7a
 # ╟─537f952a-91da-11eb-33cf-6be2fd3bc45c
 # ╟─3ad5a93c-91db-11eb-3227-c96bf8fd2206
 # ╟─d0f81f28-91d9-11eb-2e79-61461ef5b132
-# ╟─23b84ce2-91da-11eb-01f8-c308ac4d1c7a
-# ╟─74182fe0-91da-11eb-219a-01f13b86406d
 # ╟─5b972296-91da-11eb-29b1-074f3926181e
-# ╟─d420d492-91d9-11eb-056d-33cc8f0aed74
-# ╟─3c3971e2-91da-11eb-384c-01c627318bdc
 # ╟─cb0ef266-91d5-11eb-314b-0545c0c817d0
+# ╟─74182fe0-91da-11eb-219a-01f13b86406d
+# ╟─3c3971e2-91da-11eb-384c-01c627318bdc
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
