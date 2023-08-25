@@ -20,28 +20,34 @@ begin
 	using PlutoUI
 	using Plots
 	using Printf
-
+	using LaTeXStrings
 	snap_url = "https://jachereca.github.io/files/screen_labo_diff_01.png";
-		md""" 
+	set_particles = Dict("Albumine" => 6.1e-7,"Sucrose"=> 4.7e-6, "Li+"=> 9.4e-5,"Na+"=> 1.2e-5)
+	md""" 
 
 	"""
 end
+
+# ╔═╡ 478ff949-8c89-4b66-a659-446c9c85fef0
+md"""
+$(Resource("https://jachereca.github.io/files/randomwalk.gif", :width => 300, :style => "position:relative;top:0;left:0;width:100%;height:100%; "))
+"""
+#html"""
+#<img src="https://jachereca.github.io/files/randomwalk.gif"  width="450" alt = #"Random walk"/>
+#"""
 
 # ╔═╡ 084dd159-bd86-4c0d-b976-b7d615668a0c
 md"""
 # Mini-laboratoire sur la diffusion
 """
 
-# ╔═╡ 478ff949-8c89-4b66-a659-446c9c85fef0
-html"""
-<img src="https://jachereca.github.io/files/randomwalk.gif"  width="450" alt = "Random walk"/>
-"""
-
 # ╔═╡ c8f88c83-302f-40d5-b045-d7ec7ccda533
 md"""
 Dans ce mini-laboratoire, vous aurez l'opportunité d'évaluer le processus de **diffusion** de différentes particules dans l'eau (le solvent). 
 
-En premier lieu, vous pouvez sélectionner s'il s'agit de la diffusion de particules sphérique, ayant le rayon effectif *r*, ou un choix parmi différentes molécules.
+Pour ce mini-laboratoire, vous pouvez sélectionner s'il s'agit de la diffusion de particules sphérique, ayant le rayon effectif *r*, ou un choix parmi différentes molécules.
+
+Pour débuter, vous allez étudier la diffusion de particules de rayon *r*. Assurez-vous de choisir l'option "diffusion de **Particules**". Par la suite, vous pouvez choisir la valeur du rayon effectif.
 """
 
 # ╔═╡ 53ed61f7-1c19-4d2f-8c75-d32fc47019cf
@@ -53,11 +59,10 @@ md"""
 begin
 	if type_diff=="Particules"
 		md"""
-		2. Il faut aussi définir le rayon effectif ( _r_ =  $(@bind val_r PlutoUI.Select([0.001, 0.01, 0.1],default=0.001)) micromètre ). 
+		2. Il faut aussi définir le rayon effectif ( _r_ =  $(@bind val_r PlutoUI.Select([0.001, 0.01, 0.1],default=0.001)) ``\mu``m ). 
 		"""
 
 	else
-		set_particles = Dict("Albumine" => 6.1e-7,"Sucrose"=> 4.7e-6, "Li+"=> 9.4e-5,"Na+"=> 1.2e-5)
 		md"""2. Il faut faire votre choix de **molécules**: $(@bind tosim PlutoUI.Select(collect(keys(set_particles))))"""
 	end
 end
@@ -65,7 +70,7 @@ end
 # ╔═╡ d02cc09b-b82b-498f-b4b1-b3413c6dad1d
 begin
 	if type_diff=="Particules"
-		md"""## Simulation de la diffusion d'une particule de dimension _r_ = $val_r micrometer(s)"""
+		md"""## Simulation de la diffusion d'une particule de dimension _r_ = $val_r ``\mu``m """
 	else
 		md"""## Simulation de la diffusion: **$tosim**"""
 	end
@@ -99,15 +104,25 @@ begin
 end
 
 # ╔═╡ 25d3474d-8786-4ac3-84c0-009f03f96926
-md"""Utilisez cette glissière pour avancer/reculer le temps"""
+md"""Le résultat de la diffusion est affiché dans les figures suivantes. En premier, vous trouverez le profil spatial de la concentration. La distribution dans l'espace est affichée à différents temps t (ligne rouge) et pour t=0 (une ligne bleue) pour comparaison. Vous pouvez changer le temps t affichée en utilisant cette glissière pour avancer/reculer le temps."""
 
 # ╔═╡ 50da74e8-216e-466b-a348-6681bcbe0547
 @bind val_t PlutoUI.Slider(1:length(discrete_t), default=1)
 
 # ╔═╡ caffc167-db08-42a9-a35d-fac7f1335105
 md"""
-#### t = $(discrete_t[val_t]) ms
+##### *t* = $(discrete_t[val_t]) s
 """
+
+# ╔═╡ 80716cde-62bb-4cdb-8319-a3e4212e9682
+begin
+	
+if type_diff=="Particules"
+		md""" #### Graphique du profil spatial: diffusion d'une particule de dimension _r_ = $val_r ``\mu``m """
+else
+		md""" #### Graphique du profil spatial: diffusion de **$tosim**"""
+end
+end
 
 # ╔═╡ 192386bf-6377-4278-bfa1-bdaca195cc46
 begin
@@ -120,29 +135,43 @@ begin
 end
 
 # ╔═╡ 6b1d62ab-abf1-440a-a2b5-e676a19cc5fb
+begin
+	
+if type_diff=="Particules"
+		md""" #### Graphique de la variation temporelle du point central: diffusion d'une particule de dimension _r_ = $val_r ``\mu``m """
+else
+		md""" #### Graphique de la variation temporelle du point central: diffusion de **$tosim**"""
+end
+
+ 
+
+
+end
+
+# ╔═╡ e7396175-abec-4824-a71c-f5b75a3f69c3
 md"""
-Graphique de la variation temporelle du point central (cercle vert dans le graphique ci-haut). La position du marqueur vert est indiquée dans le titre du graphique.
+Ce graphique présente la variation en fonction du temps de la concentration du point central (cercle vert dans le graphique ci-haut). Le temps *t* du marqueur et la [conc] correspondante est indiquée dans le titre du graphique. De plus, vous trouverez la valeur ``t_{0.75}`` correspondant au moment où la [conc] est diminué à 75% de la valeur initiale pour la position central (point vert sur le graphique intitulé "Profil spatial").
 """
 
 # ╔═╡ 4ee1d935-d899-4d3d-9f24-7ab1fcce092f
 begin
-	str_tmp = @sprintf("t = %.2f s , [conc] = %.3f , t_{0.75} =  %.3f s",discrete_t[val_t],solu[val_t,101], t75)
+	str_tmp = @sprintf("t = %.2f s , [conc] = %.3f , \$t_{0.75}\$ =  %.3f s",discrete_t[val_t],solu[val_t,101], t75)
 	
-	Plots.plot(discrete_t, solu[:, 101], ylim = (0,1.1), xlim = (tmin, 1.1*tmax), label="x = 0.0", xlabel="t (s)", ylabel = "[conc]" )
+	Plots.plot(discrete_t, solu[:, 101], ylim = (0,1.1), xlim = (tmin, 1.1*tmax), label="x = 0.0", xlabel="t (s)", ylabel = "[conc]" , lc=:green, linewidth=3)
 	
-	Plots.scatter!(discrete_t[val_t:val_t], solu[val_t, 101:101], label="", mc=:green, ms=6, ma=0.5,title=str_tmp)
+	Plots.scatter!(discrete_t[val_t:val_t], solu[val_t, 101:101], label="", mc=:red, ms=6, ma=0.5,title=str_tmp)
 end
 
 # ╔═╡ df7c5b7b-e0ca-476b-8e40-4e3650c65e9d
 md"""
 ### Effet du rayon effectif *r* 
-Pour la première partie du mini-labo, veuillez remplir le tableau ci-bas.
+Pour la première partie du mini-labo, veuillez remplir le tableau ci-bas. Vous trouverez les valeurs de ``t_{0.75}`` dans le titre du graphique précédent. Une fois le tableau rempli, un graphique s'affichera.
 """
 
 # ╔═╡ 35640b9b-fd51-4630-9db3-002c2a6f54e1
 md"""
-| *r*    | ``t_{75\%}`` 
-| -------- | ------- |
+| *r*    | ``t_{0.75}`` 
+| :-------- | -------: |
 | 0.001  | $(@bind s1 TextField()) |
 | 0.01  | $(@bind s2 TextField()) |
 | 0.1  | $(@bind s3 TextField()) |
@@ -152,7 +181,7 @@ md"""
 # ╔═╡ 58d7b3ee-ccae-45f2-a2f4-3391f2008de7
 begin
 	if ~isempty(s1) & ~isempty(s2) & ~isempty(s3)
-		Plots.scatter([0.001 0.01 0.1], [parse(Float64,s1) parse(Float64,s2) parse(Float64,s3)], label="", mc=:red, ms=6, ma=0.5,title="", xlabel="r", ylabel = "t_{0.75}" )
+		Plots.scatter([0.001 0.01 0.1], [parse(Float64,s1) parse(Float64,s2) parse(Float64,s3)], label="", mc=:red, ms=6, ma=0.5,title="", xlabel="r", ylabel = "\$t_{0.75}\$" )
 	end
 end
 
@@ -161,8 +190,9 @@ begin
 
 
 md"""
+Affichage des valeurs du tableau
 
-| *r*    | ``t_{75\%}``
+| *r*    | ``t_{0.75}``
 | :-------- | -------: |
 | 0.001  | $s1    |
 | 0.01 | $s2     |
@@ -171,44 +201,69 @@ md"""
 
 end
 
+# ╔═╡ 4964465a-4fce-4d20-93c8-845c9bf93fb1
+md"""
+Questions: 
+1. Selon vous, quel est le lien entre le coefficient de diffusion et la valeur de ``t_{0.75}`` ?
+
+
+2. Quelle est la relation entre le rayon et ``t_{0.75}`` ?
+
+"""
+
 # ╔═╡ e040e91d-2f96-491e-a7b6-dd8be19d8c5f
 
 md"""
 ### Classification des molécules 
 	
-Pour la seconde partie du mini-labo, veuillez évaluer les molécules. Retourner dans la section plus haut (une image de la section est affichée ci-bas. 
+Pour la seconde partie du mini-labo, veuillez évaluer les molécules. Retournez dans la section plus haut et sélectionnez "diffusion de **Molécules** (une image de la section spécifique est affichée ci-bas). 
 """
 
 # ╔═╡ 571b2e4e-e97b-40c9-9664-ed4d8c5a861a
 html"""
-<hr/>
+<hr color="blue"/>
 """
 
 # ╔═╡ 3358963c-d1a3-4617-a0f2-799120548496
 md"""
-$(Resource(snap_url, :width => 300))
+$(Resource(snap_url, :width => 400, :style => "position:relative;top:0;left:0;width:100%;height:100%; "))
 """
 
 # ╔═╡ 8915b484-6eb9-4e43-976e-8818f93b9608
 html"""
-<hr/>
+<hr color="blue" />
 """
 
 # ╔═╡ ba7094b2-5feb-4da9-b9fa-547725592f23
+begin
+	str = @sprintf("%s",collect(keys(set_particles)));
 md"""
-Choississez "Molécules" dans le menu déroulant. Explorez par la suite les résultats pour l'ensemble des 4 choix disponibles. Notez les valeurs de ```t_{75%}``` que vous obtenez pour chacune des 4 molécules.
+Choississez "Molécules" dans le menu déroulant. Explorez par la suite les résultats pour l'ensemble des 4 choix disponibles. Notez les valeurs de ``t_{0.75}`` que vous obtenez pour chacune des 4 molécules ($str). 
+
+Questions: 
+1. Placer en ordre croissant de coefficient de diffusion les 4 molécules(de la molécule la moins diffusive à la plus diffusive).
+ 
+2. En vous basant sur les mesures obtenues pour des particules de différents *r* et les valeurs de ``t_{0.75}`` correspondantes, indiquer dans quel interval de rayon effectif *r* corresponds chacune des molécules ($str):
+  * A:   ``r<=0.001``
+  * B:   ``0.001<r<=0.01``
+  * C:   ``0.01<r<=0.1``
+  * D:   ``r>0.1``
+ 
 """
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [compat]
 JLD2 = "~0.4.33"
+LaTeXStrings = "~1.3.0"
 Plots = "~1.38.17"
 PlutoUI = "~0.7.52"
 """
@@ -219,7 +274,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.9.2"
 manifest_format = "2.0"
-project_hash = "815d4db5dad72d36dc5da4e5264ff05598a34fc8"
+project_hash = "a7a8c171d751bd6c06e98c7d51e68541f65fa2f9"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -1263,9 +1318,9 @@ version = "1.4.1+0"
 """
 
 # ╔═╡ Cell order:
+# ╟─478ff949-8c89-4b66-a659-446c9c85fef0
 # ╟─084dd159-bd86-4c0d-b976-b7d615668a0c
 # ╟─1a34fe34-c310-4e71-afa7-7d3f46bfb465
-# ╟─478ff949-8c89-4b66-a659-446c9c85fef0
 # ╟─c8f88c83-302f-40d5-b045-d7ec7ccda533
 # ╟─53ed61f7-1c19-4d2f-8c75-d32fc47019cf
 # ╟─0b3965ba-35d6-4b35-a616-fd7061984c54
@@ -1274,13 +1329,16 @@ version = "1.4.1+0"
 # ╟─25d3474d-8786-4ac3-84c0-009f03f96926
 # ╟─50da74e8-216e-466b-a348-6681bcbe0547
 # ╟─caffc167-db08-42a9-a35d-fac7f1335105
+# ╟─80716cde-62bb-4cdb-8319-a3e4212e9682
 # ╟─192386bf-6377-4278-bfa1-bdaca195cc46
 # ╟─6b1d62ab-abf1-440a-a2b5-e676a19cc5fb
+# ╟─e7396175-abec-4824-a71c-f5b75a3f69c3
 # ╟─4ee1d935-d899-4d3d-9f24-7ab1fcce092f
 # ╟─df7c5b7b-e0ca-476b-8e40-4e3650c65e9d
 # ╟─35640b9b-fd51-4630-9db3-002c2a6f54e1
 # ╟─58d7b3ee-ccae-45f2-a2f4-3391f2008de7
 # ╟─1b339489-8cd3-4a4d-b201-ce7522a01640
+# ╟─4964465a-4fce-4d20-93c8-845c9bf93fb1
 # ╟─e040e91d-2f96-491e-a7b6-dd8be19d8c5f
 # ╟─571b2e4e-e97b-40c9-9664-ed4d8c5a861a
 # ╟─3358963c-d1a3-4617-a0f2-799120548496
