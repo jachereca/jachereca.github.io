@@ -4,21 +4,8 @@
 using Markdown
 using InteractiveUtils
 
-# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
-macro bind(def, element)
-    quote
-        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
-        local el = $(esc(element))
-        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
-        el
-    end
-end
-
 # ╔═╡ 97e807b2-9237-11eb-31ef-6fe0d4cc94d3
 using Plots, PlutoUI, BenchmarkTools
-
-# ╔═╡ bd6d354c-e93e-4810-a5ac-61c0ec27cb36
-
 
 # ╔═╡ 3649f170-923a-11eb-321c-cf95849cc044
 html"""
@@ -79,14 +66,14 @@ md"""
 
 # ╔═╡ 66a2f510-9232-11eb-3be9-131febc0039f
 md"""
-Brown a observé le **mouvement brownien** en 1827 : de grosses particules comme le sable ou le pollen dans l'eau se déplacent apparemment au hasard. Einstein a expliqué ce phénomène en 1905 par des impacts répétés avec des molécules d'eau.
+Le système de conduction cardiaque est un complexe réseau de cellules cardiaques spécialisées qui orchestrent et coordonnent la contraction systolique et la relaxation diastolique du cœur. Ce système est crucial pour le fonctionnement efficace du cœur en tant que pompe, car il génère et transmet des impulsions électriques qui déclenchent la contraction des muscles cardiaques. La coordination précise de ces contractions est essentielle pour assurer un flux sanguin adéquat à travers tout l'organisme. 
 
-Nous pouvons visualiser ce phénomène à l'aide d'une simulation de disques durs rebondissant les uns sur les autres. Même si la dynamique n'est pas aléatoire - chaque disque suit les lois de Newton - si nous regardons un seul d'entre eux, il *semble* aléatoire.
+Avec ce mini-laboratoire, nous allons explorer la structure et la fonction des composants clés du système de conduction cardiaque, notamment le nœud sinusal (ou sino-auriculaire), le nœud atrioventriculaire (AV), le faisceau de His et les fibres de Purkinje, et explique comment ils interagissent pour contrôler le rythme cardiaque.
 """
 
 # ╔═╡ bd3170e6-91ae-11eb-06f8-ebb6b2e7869f
 md"""
-## Visualiser la marche aléatoire
+## Schéma de la séquence d'activation
 """
 
 # ╔═╡ a304c842-91df-11eb-3fac-6dd63087f6de
@@ -94,16 +81,6 @@ md"""
 Une **marche aléatoire** modélise un mouvement aléatoire dans le temps et l'espace. À chaque pas de temps, un objet se déplace dans une direction aléatoire.
 
 Visualisons le résultat en 2 dimensions. Vous pouvez changer la valeur de **N** et **t** en bougeant les "sliders" sous la figure.
-"""
-
-# ╔═╡ 798507d6-91db-11eb-2e4a-3ba02f12ba65
-md"""
-N = $(@bind N Slider(1:6, show_value=true, default=1))
-"""
-
-# ╔═╡ 3504168a-91de-11eb-181d-1d580d5dc071
-md"""
-t = $(@bind t Slider(1:10^N, show_value=true, default=1))
 """
 
 # ╔═╡ b62c4af8-9232-11eb-2f66-dd27dcb87d20
@@ -120,91 +97,17 @@ md"""
 html"""
 <div style="
 position: absolute;
-width: calc(100% - 30px);
+width: calc(100% - 300px);
 border: 50vw solid #282936;
-border-top: 200px solid #282936;
-border-bottom: none;
+border-top: 50px solid #282936;
+border-bottom: 50px solid #282936;
 box-sizing: content-box;
-left: calc(-50vw + 15px);
+left: calc(-50vw + 150px);
 top: 0px;
-height: 50px;
+height: 100px;
 pointer-events: none;
 "></div>
-
-<div style="
-height: 50px;
-width: 100%;
-background: #282936;
-color: #fff;
-padding-top: 68px;
-">
-<span style="
-font-family: Vollkorn, serif;
-font-weight: 700;
-font-feature-settings: 'lnum', 'pnum';
-"> <p style="text-align: center; font-size: 2rem;">
-<em> Validation terminée </em>
-</p>
-
-
-
-<style>
-body {
-overflow-x: hidden;
-}
-</style>"""
-
-# ╔═╡ d420d492-91d9-11eb-056d-33cc8f0aed74
-abstract type Walker end
-
-# ╔═╡ 23b84ce2-91da-11eb-01f8-c308ac4d1c7a
-struct Walker2D <: Walker
-	x::Int
-	y::Int
-end
-
-# ╔═╡ 537f952a-91da-11eb-33cf-6be2fd3bc45c
-position(w::Walker2D) = (w.x, w.y);
-
-# ╔═╡ 3ad5a93c-91db-11eb-3227-c96bf8fd2206
-update(w::Walker2D, step::Vector) = Walker2D(w.x + step[1], w.y + step[2]);
-
-# ╔═╡ d0f81f28-91d9-11eb-2e79-61461ef5b132
-position(w::Walker) = w.pos;
-
-# ╔═╡ 5b972296-91da-11eb-29b1-074f3926181e
-step(w::Walker2D) = rand( [ [1, 0], [0, 1], [-1, 0], [0, -1] ] );
-
-# ╔═╡ 3c3971e2-91da-11eb-384c-01c627318bdc
-update(w::W, step) where {W <: Walker} = W(position(w) + step)
-
-# ╔═╡ cb0ef266-91d5-11eb-314b-0545c0c817d0
-function trajectory(w::W, N) where {W}   # W is a type parameter
-	ws = [position(w)]
-
-	for i in 1:N
-		pos = position(w)
-		w = update(w, step(w))
-		
-		push!(ws, position(w))
-	end
-	
-	return ws
-end
-
-# ╔═╡ 74182fe0-91da-11eb-219a-01f13b86406d
-traj = trajectory(Walker2D(0, 0), 10^N);
-
-# ╔═╡ 4c8d8294-91db-11eb-353d-c3696c615b3d
-begin
-	plot(traj[1:t], ratio=1, leg=false, alpha=0.5, lw=2)
-	scatter!([ traj[1], traj[t] ], c=[:red, :green])
-	
-	xlims!(minimum(first.(traj)) - 1, maximum(first.(traj)) + 1)
-	ylims!(minimum(last.(traj)) - 1, maximum(last.(traj)) + 1)
-	
-end
-
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1273,28 +1176,15 @@ version = "1.4.1+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═bd6d354c-e93e-4810-a5ac-61c0ec27cb36
 # ╟─3649f170-923a-11eb-321c-cf95849cc044
 # ╟─97e807b2-9237-11eb-31ef-6fe0d4cc94d3
 # ╟─2e1468d1-215a-4a5d-941d-903a769937b4
 # ╟─ff1aca1e-91e7-11eb-343e-0f89d9570b06
-# ╠═66a2f510-9232-11eb-3be9-131febc0039f
-# ╟─bd3170e6-91ae-11eb-06f8-ebb6b2e7869f
+# ╟─66a2f510-9232-11eb-3be9-131febc0039f
+# ╠═bd3170e6-91ae-11eb-06f8-ebb6b2e7869f
 # ╟─a304c842-91df-11eb-3fac-6dd63087f6de
-# ╟─4c8d8294-91db-11eb-353d-c3696c615b3d
-# ╟─798507d6-91db-11eb-2e4a-3ba02f12ba65
-# ╟─3504168a-91de-11eb-181d-1d580d5dc071
 # ╟─b62c4af8-9232-11eb-2f66-dd27dcb87d20
 # ╟─fedc3563-a0cf-4ab5-9643-c465a683661f
 # ╟─016c7884-a0cc-40c6-b5fc-93b2c30f667b
-# ╟─d420d492-91d9-11eb-056d-33cc8f0aed74
-# ╟─23b84ce2-91da-11eb-01f8-c308ac4d1c7a
-# ╟─537f952a-91da-11eb-33cf-6be2fd3bc45c
-# ╟─3ad5a93c-91db-11eb-3227-c96bf8fd2206
-# ╟─d0f81f28-91d9-11eb-2e79-61461ef5b132
-# ╟─5b972296-91da-11eb-29b1-074f3926181e
-# ╟─cb0ef266-91d5-11eb-314b-0545c0c817d0
-# ╟─74182fe0-91da-11eb-219a-01f13b86406d
-# ╟─3c3971e2-91da-11eb-384c-01c627318bdc
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
