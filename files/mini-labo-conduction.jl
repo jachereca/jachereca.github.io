@@ -14,258 +14,209 @@ macro bind(def, element)
     end
 end
 
-# ╔═╡ 1a34fe34-c310-4e71-afa7-7d3f46bfb465
-begin
-	using JLD2
-	using PlutoUI
-	using Plots
-	using Printf
-	using LaTeXStrings
-	snap_url = "https://jachereca.github.io/files/screen_labo_diff_01.png";
-	set_particles = Dict("Albumine" => 6.1e-7,"Sucrose"=> 4.7e-6, "Li+"=> 9.4e-5,"Na+"=> 1.2e-5)
-	md""" 
+# ╔═╡ 97e807b2-9237-11eb-31ef-6fe0d4cc94d3
+using Plots, PlutoUI, BenchmarkTools
 
-	"""
-end
-
-# ╔═╡ 478ff949-8c89-4b66-a659-446c9c85fef0
-md"""
-$(Resource("https://jachereca.github.io/files/randomwalk.gif", :width => 300, :style => "position:relative;top:0;left:0;width:100%;height:100%; "))
-"""
-#html"""
-#<img src="https://jachereca.github.io/files/randomwalk.gif"  width="450" alt = #"Random walk"/>
-#"""
-
-# ╔═╡ 084dd159-bd86-4c0d-b976-b7d615668a0c
-md"""
-# Mini-laboratoire sur la diffusion
-"""
-
-# ╔═╡ c8f88c83-302f-40d5-b045-d7ec7ccda533
-md"""
-Dans ce mini-laboratoire, vous aurez l'opportunité d'évaluer le processus de **diffusion** de différentes particules dans l'eau (le solvent). 
-
-Pour ce mini-laboratoire, vous pouvez sélectionner s'il s'agit de la diffusion de particules sphérique, ayant le rayon effectif *r*, ou un choix parmi différentes molécules.
-
-Pour débuter, vous allez étudier la diffusion de particules de rayon *r*. Assurez-vous de choisir l'option "diffusion de **Particules**". Par la suite, vous pouvez choisir la valeur du rayon effectif.
-"""
-
-# ╔═╡ 53ed61f7-1c19-4d2f-8c75-d32fc47019cf
-md"""
-1. Votre choix: diffusion de  $(@bind type_diff PlutoUI.Select(["Particules","Molécules"]))  
-"""
-
-# ╔═╡ 0b3965ba-35d6-4b35-a616-fd7061984c54
-begin
-	if type_diff=="Particules"
-		md"""
-		2. Il faut aussi définir le rayon effectif ( _r_ =  $(@bind val_r PlutoUI.Select([0.001, 0.01, 0.1],default=0.001)) ``\mu``m ). 
-		"""
-
-	else
-		md"""2. Il faut faire votre choix de **molécules**: $(@bind tosim PlutoUI.Select(collect(keys(set_particles))))"""
-	end
-end
-
-# ╔═╡ d02cc09b-b82b-498f-b4b1-b3413c6dad1d
-begin
-	if type_diff=="Particules"
-		md"""## Simulation de la diffusion d'une particule de dimension _r_ = $val_r ``\mu``m """
-	else
-		md"""## Simulation de la diffusion: **$tosim**"""
-	end
-end
-
-# ╔═╡ 270a6b10-3628-11ee-0645-438b502a3a62
-begin
-	url_tmp = 	"https://jachereca.github.io/files/data/";
-	# Parameters, variables, and derivatives
-	if type_diff=="Particules"
-    	filename = url_tmp*"data_r_"*string(val_r)*".jld2";
-	else
-    	filename = url_tmp*"data_molecules_"*tosim*".jld2";
-	end
-	tmp_file = download(filename);
-	@load  tmp_file discrete_x discrete_t solu;
-	
-	xmin = minimum(discrete_x);
-	xmax = maximum(discrete_x);
-	tmin = minimum(discrete_t);
-	tmax = maximum(discrete_t);
-	
-	X = solu[:, 101];
-	pos = argmin(i -> X[i],findall(x -> x >= 0.75, X));
-	m = (X[pos+1]-X[pos])/(discrete_t[pos+1]-discrete_t[pos])
-	b = (X[pos]*discrete_t[pos+1]-X[pos+1]*discrete_t[pos])/(discrete_t[pos+1]-discrete_t[pos]);
-	t75 = (0.75-b)/m;
-	md""" 
-
-	"""
-end
-
-# ╔═╡ 25d3474d-8786-4ac3-84c0-009f03f96926
-md"""Le résultat de la diffusion est affiché dans les figures suivantes. En premier, vous trouverez le profil spatial de la concentration. La distribution dans l'espace est affichée à différents temps t (ligne rouge) et pour t=0 (une ligne bleue) pour comparaison. Vous pouvez changer le temps t affichée en utilisant cette glissière pour avancer/reculer le temps."""
-
-# ╔═╡ 50da74e8-216e-466b-a348-6681bcbe0547
-@bind val_t PlutoUI.Slider(1:length(discrete_t), default=1)
-
-# ╔═╡ caffc167-db08-42a9-a35d-fac7f1335105
-md"""
-##### *t* = $(discrete_t[val_t]) s
-"""
-
-# ╔═╡ 80716cde-62bb-4cdb-8319-a3e4212e9682
-begin
-	
-if type_diff=="Particules"
-		md""" #### Graphique du profil spatial: diffusion d'une particule de dimension _r_ = $val_r ``\mu``m """
-else
-		md""" #### Graphique du profil spatial: diffusion de **$tosim**"""
-end
-end
-
-# ╔═╡ 192386bf-6377-4278-bfa1-bdaca195cc46
-begin
-
-	str_time = "t="*string(discrete_t[val_t])*" s";
-	Plots.plot(discrete_x, solu[1, :], ylim = (0,1.1), xlim = (xmin, xmax), label="t=0.0 s" )
-	Plots.plot!(discrete_x, solu[val_t, :], ylim = (0,1.1), xlim = (xmin, xmax), title="Profil spatial", label=str_time , linewidth=3,
-	xlabel = "x",ylabel = "[conc]")
-	Plots.scatter!(discrete_x[101:101], solu[val_t, 101:101], label="", mc=:green, ms=6, ma=0.5)
-end
-
-# ╔═╡ 6b1d62ab-abf1-440a-a2b5-e676a19cc5fb
-begin
-	
-if type_diff=="Particules"
-		md""" #### Graphique de la variation temporelle du point central: diffusion d'une particule de dimension _r_ = $val_r ``\mu``m """
-else
-		md""" #### Graphique de la variation temporelle du point central: diffusion de **$tosim**"""
-end
-
- 
+# ╔═╡ bd6d354c-e93e-4810-a5ac-61c0ec27cb36
 
 
-end
-
-# ╔═╡ e7396175-abec-4824-a71c-f5b75a3f69c3
-md"""
-Ce graphique présente la variation en fonction du temps de la concentration du point central (cercle vert dans le graphique ci-haut). Le temps *t* du marqueur et la [conc] correspondante est indiquée dans le titre du graphique. De plus, vous trouverez la valeur ``t_{0.75}`` correspondant au moment où la [conc] est diminué à 75% de la valeur initiale pour la position central (point vert sur le graphique intitulé "Profil spatial").
-"""
-
-# ╔═╡ 4ee1d935-d899-4d3d-9f24-7ab1fcce092f
-begin
-	str_tmp = @sprintf("t = %.2f s , [conc] = %.3f , \$t_{0.75}\$ =  %.3f s",discrete_t[val_t],solu[val_t,101], t75)
-	
-	Plots.plot(discrete_t, solu[:, 101], ylim = (0,1.1), xlim = (tmin, 1.1*tmax), label="x = 0.0", xlabel="t (s)", ylabel = "[conc]" , lc=:green, linewidth=3)
-	
-	Plots.scatter!(discrete_t[val_t:val_t], solu[val_t, 101:101], label="", mc=:red, ms=6, ma=0.5,title=str_tmp)
-end
-
-# ╔═╡ df7c5b7b-e0ca-476b-8e40-4e3650c65e9d
-md"""
-### Effet du rayon effectif *r* 
-Pour la première partie du mini-labo, veuillez remplir le tableau ci-bas. Vous trouverez les valeurs de ``t_{0.75}`` dans le titre du graphique précédent. Une fois le tableau rempli, un graphique s'affichera.
-"""
-
-# ╔═╡ 35640b9b-fd51-4630-9db3-002c2a6f54e1
-md"""
-| *r*    | ``t_{0.75}`` 
-| :-------- | -------: |
-| 0.001  | $(@bind s1 TextField()) |
-| 0.01  | $(@bind s2 TextField()) |
-| 0.1  | $(@bind s3 TextField()) |
-
-"""
-
-# ╔═╡ 58d7b3ee-ccae-45f2-a2f4-3391f2008de7
-begin
-	if ~isempty(s1) & ~isempty(s2) & ~isempty(s3)
-		Plots.scatter([0.001 0.01 0.1], [parse(Float64,s1) parse(Float64,s2) parse(Float64,s3)], label="", mc=:red, ms=6, ma=0.5,title="", xlabel="r", ylabel = "\$t_{0.75}\$" )
-	end
-end
-
-# ╔═╡ 1b339489-8cd3-4a4d-b201-ce7522a01640
-begin
-
-
-md"""
-Affichage des valeurs du tableau
-
-| *r*    | ``t_{0.75}``
-| :-------- | -------: |
-| 0.001  | $s1    |
-| 0.01 | $s2     |
-| 0.1    | $s3   |
-"""
-
-end
-
-# ╔═╡ 4964465a-4fce-4d20-93c8-845c9bf93fb1
-md"""
-Questions: 
-1. Selon vous, quel est le lien entre le coefficient de diffusion et la valeur de ``t_{0.75}`` ?
-
-
-2. Quelle est la relation entre le rayon et ``t_{0.75}`` ?
-
-"""
-
-# ╔═╡ e040e91d-2f96-491e-a7b6-dd8be19d8c5f
-
-md"""
-### Classification des molécules 
-	
-Pour la seconde partie du mini-labo, veuillez évaluer les molécules. Retournez dans la section plus haut et sélectionnez "diffusion de **Molécules** (une image de la section spécifique est affichée ci-bas). 
-"""
-
-# ╔═╡ 571b2e4e-e97b-40c9-9664-ed4d8c5a861a
+# ╔═╡ 3649f170-923a-11eb-321c-cf95849cc044
 html"""
-<hr color="blue"/>
-"""
+<div style="
+position: absolute;
+width: calc(100% - 30px);
+border: 50vw solid #282936;
+border-top: 500px solid #282936;
+border-bottom: none;
+box-sizing: content-box;
+left: calc(-50vw + 15px);
+top: -500px;
+height: 300px;
+pointer-events: none;
+"></div>
 
-# ╔═╡ 3358963c-d1a3-4617-a0f2-799120548496
+<div style="
+height: 300px;
+width: 100%;
+background: #282936;
+color: #fff;
+padding-top: 68px;
+">
+<span style="
+font-family: Vollkorn, serif;
+font-weight: 700;
+font-feature-settings: 'lnum', 'pnum';
+"> <p style="
+font-size: 1.5rem;
+opacity: .8;
+"><em>Corps en santé 1</em></p>
+<p style="text-align: center; font-size: 2rem;">
+<em> Mini-laboratoire - unité 3 </em>
+</p>
+
+<p style="
+font-size: 1.5rem;
+text-align: center;
+opacity: .8;
+"><em>SYSTÈME DE CONDUCTION DU CŒUR</em></p>
+
+
+<style>
+body {
+overflow-x: hidden;
+}
+</style>"""
+
+# ╔═╡ 2e1468d1-215a-4a5d-941d-903a769937b4
 md"""
-$(Resource(snap_url, :width => 400, :style => "position:relative;top:0;left:0;width:100%;height:100%; "))
+$(Resource("https://upload.wikimedia.org/wikipedia/commons/1/12/CG_Heart.gif", :width => 300, :style => "position:relative;top:0;left:0;width:100%;height:100%; "))
 """
 
-# ╔═╡ 8915b484-6eb9-4e43-976e-8818f93b9608
+# ╔═╡ ff1aca1e-91e7-11eb-343e-0f89d9570b06
+md"""
+## Le système de conduction cardiaque
+"""
+
+# ╔═╡ 66a2f510-9232-11eb-3be9-131febc0039f
+md"""
+Brown a observé le **mouvement brownien** en 1827 : de grosses particules comme le sable ou le pollen dans l'eau se déplacent apparemment au hasard. Einstein a expliqué ce phénomène en 1905 par des impacts répétés avec des molécules d'eau.
+
+Nous pouvons visualiser ce phénomène à l'aide d'une simulation de disques durs rebondissant les uns sur les autres. Même si la dynamique n'est pas aléatoire - chaque disque suit les lois de Newton - si nous regardons un seul d'entre eux, il *semble* aléatoire.
+"""
+
+# ╔═╡ bd3170e6-91ae-11eb-06f8-ebb6b2e7869f
+md"""
+## Visualiser la marche aléatoire
+"""
+
+# ╔═╡ a304c842-91df-11eb-3fac-6dd63087f6de
+md"""
+Une **marche aléatoire** modélise un mouvement aléatoire dans le temps et l'espace. À chaque pas de temps, un objet se déplace dans une direction aléatoire.
+
+Visualisons le résultat en 2 dimensions. Vous pouvez changer la valeur de **N** et **t** en bougeant les "sliders" sous la figure.
+"""
+
+# ╔═╡ 798507d6-91db-11eb-2e4a-3ba02f12ba65
+md"""
+N = $(@bind N Slider(1:6, show_value=true, default=1))
+"""
+
+# ╔═╡ 3504168a-91de-11eb-181d-1d580d5dc071
+md"""
+t = $(@bind t Slider(1:10^N, show_value=true, default=1))
+"""
+
+# ╔═╡ b62c4af8-9232-11eb-2f66-dd27dcb87d20
+md"""
+Si vous voyez apparaître des trajectoires aléatoires plus longues en augmentant **t** et moins grossières en augmentant **N**, votre installation est validée!
+"""
+
+# ╔═╡ fedc3563-a0cf-4ab5-9643-c465a683661f
+md"""
+## Terminée
+"""
+
+# ╔═╡ 016c7884-a0cc-40c6-b5fc-93b2c30f667b
 html"""
-<hr color="blue" />
-"""
+<div style="
+position: absolute;
+width: calc(100% - 30px);
+border: 50vw solid #282936;
+border-top: 200px solid #282936;
+border-bottom: none;
+box-sizing: content-box;
+left: calc(-50vw + 15px);
+top: 0px;
+height: 50px;
+pointer-events: none;
+"></div>
 
-# ╔═╡ ba7094b2-5feb-4da9-b9fa-547725592f23
-begin
-	str = @sprintf("%s",collect(keys(set_particles)));
-md"""
-Choississez "Molécules" dans le menu déroulant. Explorez par la suite les résultats pour l'ensemble des 4 choix disponibles. Notez les valeurs de ``t_{0.75}`` que vous obtenez pour chacune des 4 molécules ($str). 
+<div style="
+height: 50px;
+width: 100%;
+background: #282936;
+color: #fff;
+padding-top: 68px;
+">
+<span style="
+font-family: Vollkorn, serif;
+font-weight: 700;
+font-feature-settings: 'lnum', 'pnum';
+"> <p style="text-align: center; font-size: 2rem;">
+<em> Validation terminée </em>
+</p>
 
-Questions: 
-1. Placer en ordre croissant de coefficient de diffusion les 4 molécules(de la molécule la moins diffusive à la plus diffusive).
- 
-2. En vous basant sur les mesures obtenues pour des particules de différents *r* et les valeurs de ``t_{0.75}`` correspondantes, indiquer dans quel interval de rayon effectif *r* corresponds chacune des molécules ($str):
-  * A:   ``r<=0.001``
-  * B:   ``0.001<r<=0.01``
-  * C:   ``0.01<r<=0.1``
-  * D:   ``r>0.1``
- 
-"""
+
+
+<style>
+body {
+overflow-x: hidden;
+}
+</style>"""
+
+# ╔═╡ d420d492-91d9-11eb-056d-33cc8f0aed74
+abstract type Walker end
+
+# ╔═╡ 23b84ce2-91da-11eb-01f8-c308ac4d1c7a
+struct Walker2D <: Walker
+	x::Int
+	y::Int
 end
+
+# ╔═╡ 537f952a-91da-11eb-33cf-6be2fd3bc45c
+position(w::Walker2D) = (w.x, w.y);
+
+# ╔═╡ 3ad5a93c-91db-11eb-3227-c96bf8fd2206
+update(w::Walker2D, step::Vector) = Walker2D(w.x + step[1], w.y + step[2]);
+
+# ╔═╡ d0f81f28-91d9-11eb-2e79-61461ef5b132
+position(w::Walker) = w.pos;
+
+# ╔═╡ 5b972296-91da-11eb-29b1-074f3926181e
+step(w::Walker2D) = rand( [ [1, 0], [0, 1], [-1, 0], [0, -1] ] );
+
+# ╔═╡ 3c3971e2-91da-11eb-384c-01c627318bdc
+update(w::W, step) where {W <: Walker} = W(position(w) + step)
+
+# ╔═╡ cb0ef266-91d5-11eb-314b-0545c0c817d0
+function trajectory(w::W, N) where {W}   # W is a type parameter
+	ws = [position(w)]
+
+	for i in 1:N
+		pos = position(w)
+		w = update(w, step(w))
+		
+		push!(ws, position(w))
+	end
+	
+	return ws
+end
+
+# ╔═╡ 74182fe0-91da-11eb-219a-01f13b86406d
+traj = trajectory(Walker2D(0, 0), 10^N);
+
+# ╔═╡ 4c8d8294-91db-11eb-353d-c3696c615b3d
+begin
+	plot(traj[1:t], ratio=1, leg=false, alpha=0.5, lw=2)
+	scatter!([ traj[1], traj[t] ], c=[:red, :green])
+	
+	xlims!(minimum(first.(traj)) - 1, maximum(first.(traj)) + 1)
+	ylims!(minimum(last.(traj)) - 1, maximum(last.(traj)) + 1)
+	
+end
+
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
-JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
-LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
+BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
-Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [compat]
-JLD2 = "~0.4.33"
-LaTeXStrings = "~1.3.0"
-Plots = "~1.38.17"
-PlutoUI = "~0.7.52"
+BenchmarkTools = "~1.3.2"
+Plots = "~1.38.16"
+PlutoUI = "~0.7.51"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -274,13 +225,13 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.9.3"
 manifest_format = "2.0"
-project_hash = "a7a8c171d751bd6c06e98c7d51e68541f65fa2f9"
+project_hash = "9b86fa64e63295c0150c113971005df1163104c6"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
-git-tree-sha1 = "91bd53c39b9cbfb5ef4b015e8b582d344532bd0a"
+git-tree-sha1 = "8eaf9f1b4921132a4cff3f36a1d9ba923b14a481"
 uuid = "6e696c72-6542-2067-7265-42206c756150"
-version = "1.2.0"
+version = "1.1.4"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -291,6 +242,12 @@ uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
 
 [[deps.Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
+
+[[deps.BenchmarkTools]]
+deps = ["JSON", "Logging", "Printf", "Profile", "Statistics", "UUIDs"]
+git-tree-sha1 = "d9a9701b899b30332bbcb3e1679c41cce81fb0e8"
+uuid = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
+version = "1.3.2"
 
 [[deps.BitFlags]]
 git-tree-sha1 = "43b1a4a8f797c1cddadf60499a8a077d4af2cd2d"
@@ -311,15 +268,15 @@ version = "1.16.1+1"
 
 [[deps.CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]
-git-tree-sha1 = "02aa26a4cf76381be7f66e020a3eddeb27b0a092"
+git-tree-sha1 = "9c209fb7536406834aa938fb149964b985de6c83"
 uuid = "944b1d66-785c-5afd-91f1-9de20f533193"
-version = "0.7.2"
+version = "0.7.1"
 
 [[deps.ColorSchemes]]
 deps = ["ColorTypes", "ColorVectorSpace", "Colors", "FixedPointNumbers", "PrecompileTools", "Random"]
-git-tree-sha1 = "d9a8f86737b665e15a9641ecbac64deef9ce6724"
+git-tree-sha1 = "be6ab11021cd29f0344d5c4357b163af05a48cba"
 uuid = "35d6a980-a343-548e-a6ea-1d62b119f2f4"
-version = "3.23.0"
+version = "3.21.0"
 
 [[deps.ColorTypes]]
 deps = ["FixedPointNumbers", "Random"]
@@ -341,9 +298,9 @@ version = "0.12.10"
 
 [[deps.Compat]]
 deps = ["UUIDs"]
-git-tree-sha1 = "e460f044ca8b99be31d35fe54fc33a5c33dd8ed7"
+git-tree-sha1 = "4e88377ae7ebeaf29a047aa1ee40826e0b708a5d"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
-version = "4.9.0"
+version = "4.7.0"
 weakdeps = ["Dates", "LinearAlgebra"]
 
     [deps.Compat.extensions]
@@ -356,9 +313,23 @@ version = "1.0.5+0"
 
 [[deps.ConcurrentUtilities]]
 deps = ["Serialization", "Sockets"]
-git-tree-sha1 = "5372dbbf8f0bdb8c700db5367132925c0771ef7e"
+git-tree-sha1 = "96d823b94ba8d187a6d8f0826e731195a74b90e9"
 uuid = "f0e56b4a-5159-44fe-b623-3e5288b988bb"
-version = "2.2.1"
+version = "2.2.0"
+
+[[deps.ConstructionBase]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "738fec4d684a9a6ee9598a8bfee305b26831f28c"
+uuid = "187b0558-2788-49d3-abe0-74a17ed4e7c9"
+version = "1.5.2"
+
+    [deps.ConstructionBase.extensions]
+    ConstructionBaseIntervalSetsExt = "IntervalSets"
+    ConstructionBaseStaticArraysExt = "StaticArrays"
+
+    [deps.ConstructionBase.weakdeps]
+    IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
+    StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [[deps.Contour]]
 git-tree-sha1 = "d05d9e7b7aedff4e5b51a029dced05cfb6125781"
@@ -372,9 +343,9 @@ version = "1.15.0"
 
 [[deps.DataStructures]]
 deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
-git-tree-sha1 = "3dbd312d370723b6bb43ba9d02fc36abade4518d"
+git-tree-sha1 = "d1fff3a548102f48987a52a2e0d114fa97d730f0"
 uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
-version = "0.18.15"
+version = "0.18.13"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -421,12 +392,6 @@ git-tree-sha1 = "74faea50c1d007c85837327f6775bea60b5492dd"
 uuid = "b22a6f82-2f65-5046-a5b2-351ab43fb4e5"
 version = "4.4.2+2"
 
-[[deps.FileIO]]
-deps = ["Pkg", "Requires", "UUIDs"]
-git-tree-sha1 = "299dc33549f68299137e51e6d49a13b5b1da9673"
-uuid = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
-version = "1.16.1"
-
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 
@@ -468,15 +433,15 @@ version = "3.3.8+0"
 
 [[deps.GR]]
 deps = ["Artifacts", "Base64", "DelimitedFiles", "Downloads", "GR_jll", "HTTP", "JSON", "Libdl", "LinearAlgebra", "Pkg", "Preferences", "Printf", "Random", "Serialization", "Sockets", "TOML", "Tar", "Test", "UUIDs", "p7zip_jll"]
-git-tree-sha1 = "d73afa4a2bb9de56077242d98cf763074ab9a970"
+git-tree-sha1 = "8b8a2fd4536ece6e554168c21860b6820a8a83db"
 uuid = "28b8d3ca-fb5f-59d9-8090-bfdbd6d07a71"
-version = "0.72.9"
+version = "0.72.7"
 
 [[deps.GR_jll]]
-deps = ["Artifacts", "Bzip2_jll", "Cairo_jll", "FFMPEG_jll", "Fontconfig_jll", "FreeType2_jll", "GLFW_jll", "JLLWrappers", "JpegTurbo_jll", "Libdl", "Libtiff_jll", "Pixman_jll", "Qt6Base_jll", "Zlib_jll", "libpng_jll"]
-git-tree-sha1 = "1596bab77f4f073a14c62424283e7ebff3072eca"
+deps = ["Artifacts", "Bzip2_jll", "Cairo_jll", "FFMPEG_jll", "Fontconfig_jll", "GLFW_jll", "JLLWrappers", "JpegTurbo_jll", "Libdl", "Libtiff_jll", "Pixman_jll", "Qt5Base_jll", "Zlib_jll", "libpng_jll"]
+git-tree-sha1 = "19fad9cd9ae44847fe842558a744748084a722d1"
 uuid = "d2c73de3-f751-5644-a686-071e5b155ba9"
-version = "0.72.9+1"
+version = "0.72.7+0"
 
 [[deps.Gettext_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Libiconv_jll", "Pkg", "XML2_jll"]
@@ -503,9 +468,9 @@ version = "1.0.2"
 
 [[deps.HTTP]]
 deps = ["Base64", "CodecZlib", "ConcurrentUtilities", "Dates", "ExceptionUnwrapping", "Logging", "LoggingExtras", "MbedTLS", "NetworkOptions", "OpenSSL", "Random", "SimpleBufferStream", "Sockets", "URIs", "UUIDs"]
-git-tree-sha1 = "cb56ccdd481c0dd7f975ad2b3b62d9eda088f7e2"
+git-tree-sha1 = "2613d054b0e18a3dea99ca1594e9a3960e025da4"
 uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
-version = "1.9.14"
+version = "1.9.7"
 
 [[deps.HarfBuzz_jll]]
 deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "Graphite2_jll", "JLLWrappers", "Libdl", "Libffi_jll", "Pkg"]
@@ -540,12 +505,6 @@ git-tree-sha1 = "630b497eafcc20001bba38a4651b327dcfc491d2"
 uuid = "92d709cd-6900-40b7-9082-c6be49f344b6"
 version = "0.2.2"
 
-[[deps.JLD2]]
-deps = ["FileIO", "MacroTools", "Mmap", "OrderedCollections", "Pkg", "Printf", "Reexport", "Requires", "TranscodingStreams", "UUIDs"]
-git-tree-sha1 = "aa6ffef1fd85657f4999030c52eaeec22a279738"
-uuid = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
-version = "0.4.33"
-
 [[deps.JLFzf]]
 deps = ["Pipe", "REPL", "Random", "fzf_jll"]
 git-tree-sha1 = "f377670cda23b6b7c1c0b3893e37451c5c1a2185"
@@ -553,10 +512,10 @@ uuid = "1019f520-868f-41f5-a6de-eb00f4b6a39c"
 version = "0.1.5"
 
 [[deps.JLLWrappers]]
-deps = ["Artifacts", "Preferences"]
-git-tree-sha1 = "7e5d6779a1e09a36db2a7b6cff50942a0a7d0fca"
+deps = ["Preferences"]
+git-tree-sha1 = "abc9885a7ca2052a736a600f7fa66209f96506e1"
 uuid = "692b3bcd-3c85-4b1f-b108-f13ce0eb3210"
-version = "1.5.0"
+version = "1.4.1"
 
 [[deps.JSON]]
 deps = ["Dates", "Mmap", "Parsers", "Unicode"]
@@ -672,10 +631,10 @@ uuid = "4b2f31a3-9ecc-558c-b454-b3730dcb73e9"
 version = "2.35.0+0"
 
 [[deps.Libtiff_jll]]
-deps = ["Artifacts", "JLLWrappers", "JpegTurbo_jll", "LERC_jll", "Libdl", "XZ_jll", "Zlib_jll", "Zstd_jll"]
-git-tree-sha1 = "2da088d113af58221c52828a80378e16be7d037a"
+deps = ["Artifacts", "JLLWrappers", "JpegTurbo_jll", "LERC_jll", "Libdl", "Pkg", "Zlib_jll", "Zstd_jll"]
+git-tree-sha1 = "3eb79b0ca5764d4799c06699573fd8f533259713"
 uuid = "89763e89-9b03-5906-acba-b20f662cd828"
-version = "4.5.1+1"
+version = "4.4.0+0"
 
 [[deps.Libuuid_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -689,9 +648,9 @@ uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 
 [[deps.LogExpFunctions]]
 deps = ["DocStringExtensions", "IrrationalConstants", "LinearAlgebra"]
-git-tree-sha1 = "7d6dd4e9212aebaeed356de34ccf262a3cd415aa"
+git-tree-sha1 = "c3ce8e7420b3a6e071e0fe4745f5d4300e37b13f"
 uuid = "2ab3a3ac-af41-5b50-aa03-7779005ae688"
-version = "0.3.26"
+version = "0.3.24"
 
     [deps.LogExpFunctions.extensions]
     LogExpFunctionsChainRulesCoreExt = "ChainRulesCore"
@@ -708,9 +667,9 @@ uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
 [[deps.LoggingExtras]]
 deps = ["Dates", "Logging"]
-git-tree-sha1 = "a03c77519ab45eb9a34d3cfe2ca223d79c064323"
+git-tree-sha1 = "cedb76b37bc5a6c702ade66be44f831fa23c681e"
 uuid = "e6f89c97-d47a-5376-807f-9c37f3926c36"
-version = "1.0.1"
+version = "1.0.0"
 
 [[deps.MIMEs]]
 git-tree-sha1 = "65f28ad4b594aebe22157d6fac869786a255b7eb"
@@ -719,9 +678,9 @@ version = "0.1.4"
 
 [[deps.MacroTools]]
 deps = ["Markdown", "Random"]
-git-tree-sha1 = "9ee1618cbf5240e6d4e0371d6f24065083f60c48"
+git-tree-sha1 = "42324d08725e200c23d4dfb549e0d5d89dede2d2"
 uuid = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
-version = "0.5.11"
+version = "0.5.10"
 
 [[deps.Markdown]]
 deps = ["Base64"]
@@ -790,9 +749,9 @@ version = "1.4.1"
 
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "bbb5c2115d63c2f1451cb70e5ef75e8fe4707019"
+git-tree-sha1 = "1aa4b74f80b01c6bc2b89992b861b5f210e665b5"
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
-version = "1.1.22+0"
+version = "1.1.21+0"
 
 [[deps.OpenSpecFun_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Pkg"]
@@ -807,9 +766,9 @@ uuid = "91d4177d-7536-5919-b921-800302f37372"
 version = "1.3.2+0"
 
 [[deps.OrderedCollections]]
-git-tree-sha1 = "2e73fe17cac3c62ad1aebe70d44c963c3cfdc3e3"
+git-tree-sha1 = "d321bf2de576bf25ec4d3e4360faca399afca282"
 uuid = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
-version = "1.6.2"
+version = "1.6.0"
 
 [[deps.PCRE2_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -818,9 +777,9 @@ version = "10.42.0+0"
 
 [[deps.Parsers]]
 deps = ["Dates", "PrecompileTools", "UUIDs"]
-git-tree-sha1 = "716e24b21538abc91f6205fd1d8363f39b442851"
+git-tree-sha1 = "4b2e829ee66d4218e0cef22c0a64ee37cf258c29"
 uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
-version = "2.7.2"
+version = "2.7.1"
 
 [[deps.Pipe]]
 git-tree-sha1 = "6842804e7867b115ca9de748a0cf6b364523c16d"
@@ -852,9 +811,9 @@ version = "1.3.5"
 
 [[deps.Plots]]
 deps = ["Base64", "Contour", "Dates", "Downloads", "FFMPEG", "FixedPointNumbers", "GR", "JLFzf", "JSON", "LaTeXStrings", "Latexify", "LinearAlgebra", "Measures", "NaNMath", "Pkg", "PlotThemes", "PlotUtils", "PrecompileTools", "Preferences", "Printf", "REPL", "Random", "RecipesBase", "RecipesPipeline", "Reexport", "RelocatableFolders", "Requires", "Scratch", "Showoff", "SparseArrays", "Statistics", "StatsBase", "UUIDs", "UnicodeFun", "UnitfulLatexify", "Unzip"]
-git-tree-sha1 = "9f8675a55b37a70aa23177ec110f6e3f4dd68466"
+git-tree-sha1 = "75ca67b2c6512ad2d0c767a7cfc55e75075f8bbc"
 uuid = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
-version = "1.38.17"
+version = "1.38.16"
 
     [deps.Plots.extensions]
     FileIOExt = "FileIO"
@@ -872,9 +831,9 @@ version = "1.38.17"
 
 [[deps.PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
-git-tree-sha1 = "e47cd150dbe0443c3a3651bc5b9cbd5576ab75b7"
+git-tree-sha1 = "b478a748be27bd2f2c73a7690da219d0844db305"
 uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
-version = "0.7.52"
+version = "0.7.51"
 
 [[deps.PrecompileTools]]
 deps = ["Preferences"]
@@ -892,11 +851,15 @@ version = "1.4.0"
 deps = ["Unicode"]
 uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
-[[deps.Qt6Base_jll]]
-deps = ["Artifacts", "CompilerSupportLibraries_jll", "Fontconfig_jll", "Glib_jll", "JLLWrappers", "Libdl", "Libglvnd_jll", "OpenSSL_jll", "Pkg", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Xorg_libxcb_jll", "Xorg_xcb_util_image_jll", "Xorg_xcb_util_keysyms_jll", "Xorg_xcb_util_renderutil_jll", "Xorg_xcb_util_wm_jll", "Zlib_jll", "xkbcommon_jll"]
-git-tree-sha1 = "364898e8f13f7eaaceec55fd3d08680498c0aa6e"
-uuid = "c0090381-4147-56d7-9ebc-da0b1113ec56"
-version = "6.4.2+3"
+[[deps.Profile]]
+deps = ["Printf"]
+uuid = "9abbd945-dff8-562f-b5e8-e1ebf5ef1b79"
+
+[[deps.Qt5Base_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "Fontconfig_jll", "Glib_jll", "JLLWrappers", "Libdl", "Libglvnd_jll", "OpenSSL_jll", "Pkg", "Xorg_libXext_jll", "Xorg_libxcb_jll", "Xorg_xcb_util_image_jll", "Xorg_xcb_util_keysyms_jll", "Xorg_xcb_util_renderutil_jll", "Xorg_xcb_util_wm_jll", "Zlib_jll", "xkbcommon_jll"]
+git-tree-sha1 = "0c03844e2231e12fda4d0086fd7cbe4098ee8dc5"
+uuid = "ea2cea3b-5b76-57ae-a6ef-0a8af62496e1"
+version = "5.15.3+2"
 
 [[deps.REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
@@ -974,9 +937,9 @@ uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [[deps.SpecialFunctions]]
 deps = ["IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
-git-tree-sha1 = "e2cfc4012a19088254b3950b85c3c1d8882d864d"
+git-tree-sha1 = "7beb031cf8145577fbccacd94b8a8f4ce78428d3"
 uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
-version = "2.3.1"
+version = "2.3.0"
 
     [deps.SpecialFunctions.extensions]
     SpecialFunctionsChainRulesCoreExt = "ChainRulesCore"
@@ -1038,9 +1001,9 @@ uuid = "410a4b4d-49e4-4fbc-ab6d-cb71b17b3775"
 version = "0.1.7"
 
 [[deps.URIs]]
-git-tree-sha1 = "b7a5e99f24892b6824a954199a45e9ffcc1c70f0"
+git-tree-sha1 = "074f993b0ca030848b897beff716d93aca60f06a"
 uuid = "5c2747f8-b7ea-4ff2-ba2e-563bfd36b1d4"
-version = "1.5.0"
+version = "1.4.2"
 
 [[deps.UUIDs]]
 deps = ["Random", "SHA"]
@@ -1056,17 +1019,15 @@ uuid = "1cfade01-22cf-5700-b092-accc4b62d6e1"
 version = "0.4.1"
 
 [[deps.Unitful]]
-deps = ["Dates", "LinearAlgebra", "Random"]
-git-tree-sha1 = "607c142139151faa591b5e80d8055a15e487095b"
+deps = ["ConstructionBase", "Dates", "LinearAlgebra", "Random"]
+git-tree-sha1 = "ba4aa36b2d5c98d6ed1f149da916b3ba46527b2b"
 uuid = "1986cc42-f94f-5a68-af5c-568840ba703d"
-version = "1.16.3"
+version = "1.14.0"
 
     [deps.Unitful.extensions]
-    ConstructionBaseUnitfulExt = "ConstructionBase"
     InverseFunctionsUnitfulExt = "InverseFunctions"
 
     [deps.Unitful.weakdeps]
-    ConstructionBase = "187b0558-2788-49d3-abe0-74a17ed4e7c9"
     InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
 
 [[deps.UnitfulLatexify]]
@@ -1104,23 +1065,17 @@ git-tree-sha1 = "91844873c4085240b95e795f692c4cec4d805f8a"
 uuid = "aed1982a-8fda-507f-9586-7b0439959a61"
 version = "1.1.34+0"
 
-[[deps.XZ_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "cf2c7de82431ca6f39250d2fc4aacd0daa1675c0"
-uuid = "ffd25f8a-64ca-5728-b0f7-c24cf3aae800"
-version = "5.4.4+0"
-
 [[deps.Xorg_libX11_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libxcb_jll", "Xorg_xtrans_jll"]
-git-tree-sha1 = "afead5aba5aa507ad5a3bf01f58f82c8d1403495"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "Xorg_libxcb_jll", "Xorg_xtrans_jll"]
+git-tree-sha1 = "5be649d550f3f4b95308bf0183b82e2582876527"
 uuid = "4f6342f7-b3d2-589e-9d20-edeb45f2b2bc"
-version = "1.8.6+0"
+version = "1.6.9+4"
 
 [[deps.Xorg_libXau_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "6035850dcc70518ca32f012e46015b9beeda49d8"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "4e490d5c960c314f33885790ed410ff3a94ce67e"
 uuid = "0c0b7dd1-d40b-584c-a123-a41640f87eec"
-version = "1.0.11+0"
+version = "1.0.9+4"
 
 [[deps.Xorg_libXcursor_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "Xorg_libXfixes_jll", "Xorg_libXrender_jll"]
@@ -1129,10 +1084,10 @@ uuid = "935fb764-8cf2-53bf-bb30-45bb1f8bf724"
 version = "1.2.0+4"
 
 [[deps.Xorg_libXdmcp_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "34d526d318358a859d7de23da945578e8e8727b7"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "4fe47bd2247248125c428978740e18a681372dd4"
 uuid = "a3789734-cfe1-5b06-b2d0-1dd0d9d62d05"
-version = "1.1.4+0"
+version = "1.1.3+4"
 
 [[deps.Xorg_libXext_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "Xorg_libX11_jll"]
@@ -1171,22 +1126,22 @@ uuid = "ea2f1a96-1ddc-540d-b46f-429655e07cfa"
 version = "0.9.10+4"
 
 [[deps.Xorg_libpthread_stubs_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "8fdda4c692503d44d04a0603d9ac0982054635f9"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "6783737e45d3c59a4a4c4091f5f88cdcf0908cbb"
 uuid = "14d82f49-176c-5ed1-bb49-ad3f5cbd8c74"
-version = "0.1.1+0"
+version = "0.1.0+3"
 
 [[deps.Xorg_libxcb_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "XSLT_jll", "Xorg_libXau_jll", "Xorg_libXdmcp_jll", "Xorg_libpthread_stubs_jll"]
-git-tree-sha1 = "b4bfde5d5b652e22b9c790ad00af08b6d042b97d"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "XSLT_jll", "Xorg_libXau_jll", "Xorg_libXdmcp_jll", "Xorg_libpthread_stubs_jll"]
+git-tree-sha1 = "daf17f441228e7a3833846cd048892861cff16d6"
 uuid = "c7cfdc94-dc32-55de-ac96-5a1b8d977c5b"
-version = "1.15.0+0"
+version = "1.13.0+3"
 
 [[deps.Xorg_libxkbfile_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libX11_jll"]
-git-tree-sha1 = "730eeca102434283c50ccf7d1ecdadf521a765a4"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "Xorg_libX11_jll"]
+git-tree-sha1 = "926af861744212db0eb001d9e40b5d16292080b2"
 uuid = "cc61e674-0454-545c-8b26-ed2c68acab7a"
-version = "1.1.2+0"
+version = "1.1.0+4"
 
 [[deps.Xorg_xcb_util_image_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "Xorg_xcb_util_jll"]
@@ -1219,22 +1174,22 @@ uuid = "c22f9ab0-d5fe-5066-847c-f4bb1cd4e361"
 version = "0.4.1+1"
 
 [[deps.Xorg_xkbcomp_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libxkbfile_jll"]
-git-tree-sha1 = "330f955bc41bb8f5270a369c473fc4a5a4e4d3cb"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "Xorg_libxkbfile_jll"]
+git-tree-sha1 = "4bcbf660f6c2e714f87e960a171b119d06ee163b"
 uuid = "35661453-b289-5fab-8a00-3d9160c6a3a4"
-version = "1.4.6+0"
+version = "1.4.2+4"
 
 [[deps.Xorg_xkeyboard_config_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_xkbcomp_jll"]
-git-tree-sha1 = "691634e5453ad362044e2ad653e79f3ee3bb98c3"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "Xorg_xkbcomp_jll"]
+git-tree-sha1 = "5c8424f8a67c3f2209646d4425f3d415fee5931d"
 uuid = "33bec58e-1273-512f-9401-5d533626f822"
-version = "2.39.0+0"
+version = "2.27.0+4"
 
 [[deps.Xorg_xtrans_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "e92a1a012a10506618f10b7047e478403a046c77"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "79c31e7844f6ecf779705fbc12146eb190b7d845"
 uuid = "c5fb5394-a638-5e4d-96e5-b29de1b5cf10"
-version = "1.5.0+0"
+version = "1.4.0+3"
 
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
@@ -1318,31 +1273,28 @@ version = "1.4.1+0"
 """
 
 # ╔═╡ Cell order:
-# ╟─478ff949-8c89-4b66-a659-446c9c85fef0
-# ╟─084dd159-bd86-4c0d-b976-b7d615668a0c
-# ╠═1a34fe34-c310-4e71-afa7-7d3f46bfb465
-# ╟─c8f88c83-302f-40d5-b045-d7ec7ccda533
-# ╟─53ed61f7-1c19-4d2f-8c75-d32fc47019cf
-# ╟─0b3965ba-35d6-4b35-a616-fd7061984c54
-# ╟─d02cc09b-b82b-498f-b4b1-b3413c6dad1d
-# ╟─270a6b10-3628-11ee-0645-438b502a3a62
-# ╟─25d3474d-8786-4ac3-84c0-009f03f96926
-# ╟─50da74e8-216e-466b-a348-6681bcbe0547
-# ╟─caffc167-db08-42a9-a35d-fac7f1335105
-# ╟─80716cde-62bb-4cdb-8319-a3e4212e9682
-# ╟─192386bf-6377-4278-bfa1-bdaca195cc46
-# ╟─6b1d62ab-abf1-440a-a2b5-e676a19cc5fb
-# ╟─e7396175-abec-4824-a71c-f5b75a3f69c3
-# ╟─4ee1d935-d899-4d3d-9f24-7ab1fcce092f
-# ╟─df7c5b7b-e0ca-476b-8e40-4e3650c65e9d
-# ╟─35640b9b-fd51-4630-9db3-002c2a6f54e1
-# ╟─58d7b3ee-ccae-45f2-a2f4-3391f2008de7
-# ╟─1b339489-8cd3-4a4d-b201-ce7522a01640
-# ╟─4964465a-4fce-4d20-93c8-845c9bf93fb1
-# ╟─e040e91d-2f96-491e-a7b6-dd8be19d8c5f
-# ╟─571b2e4e-e97b-40c9-9664-ed4d8c5a861a
-# ╟─3358963c-d1a3-4617-a0f2-799120548496
-# ╟─8915b484-6eb9-4e43-976e-8818f93b9608
-# ╟─ba7094b2-5feb-4da9-b9fa-547725592f23
+# ╠═bd6d354c-e93e-4810-a5ac-61c0ec27cb36
+# ╟─3649f170-923a-11eb-321c-cf95849cc044
+# ╟─97e807b2-9237-11eb-31ef-6fe0d4cc94d3
+# ╟─2e1468d1-215a-4a5d-941d-903a769937b4
+# ╟─ff1aca1e-91e7-11eb-343e-0f89d9570b06
+# ╠═66a2f510-9232-11eb-3be9-131febc0039f
+# ╟─bd3170e6-91ae-11eb-06f8-ebb6b2e7869f
+# ╟─a304c842-91df-11eb-3fac-6dd63087f6de
+# ╟─4c8d8294-91db-11eb-353d-c3696c615b3d
+# ╟─798507d6-91db-11eb-2e4a-3ba02f12ba65
+# ╟─3504168a-91de-11eb-181d-1d580d5dc071
+# ╟─b62c4af8-9232-11eb-2f66-dd27dcb87d20
+# ╟─fedc3563-a0cf-4ab5-9643-c465a683661f
+# ╟─016c7884-a0cc-40c6-b5fc-93b2c30f667b
+# ╟─d420d492-91d9-11eb-056d-33cc8f0aed74
+# ╟─23b84ce2-91da-11eb-01f8-c308ac4d1c7a
+# ╟─537f952a-91da-11eb-33cf-6be2fd3bc45c
+# ╟─3ad5a93c-91db-11eb-3227-c96bf8fd2206
+# ╟─d0f81f28-91d9-11eb-2e79-61461ef5b132
+# ╟─5b972296-91da-11eb-29b1-074f3926181e
+# ╟─cb0ef266-91d5-11eb-314b-0545c0c817d0
+# ╟─74182fe0-91da-11eb-219a-01f13b86406d
+# ╟─3c3971e2-91da-11eb-384c-01c627318bdc
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
