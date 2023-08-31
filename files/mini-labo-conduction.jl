@@ -4,6 +4,16 @@
 using Markdown
 using InteractiveUtils
 
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+end
+
 # ╔═╡ 97e807b2-9237-11eb-31ef-6fe0d4cc94d3
 begin
 	using Plots, PlutoUI, Images, FileIO, Printf
@@ -90,23 +100,50 @@ L'image du coeur ci-bas montre les structures centrales du système de conductio
 
 # ╔═╡ 331d3cfa-003a-42d4-a498-fa904c5182db
 md"""
-$(Resource("https://jachereca.github.io/images/conduction-system-2022.png", :width => 100, :style => "position:relative;top:0;left:20%;width:70%;height:70%; "))
+$(Resource("https://jachereca.github.io/images/conduction-system-2022.png", :style => "position:relative;top:0;left:0%;width:70%;height:70%;background-color:white;"))
 """
 
 # ╔═╡ b4da22a6-a4d4-4414-98f1-26f559df2c43
 begin
-	cnt = 10;
-	nbfile = @sprintf("%02i",cnt)
-	url_load = url_part*"lab_cs_seq"
-	tmp_file = download(url_seq);
-	img = load(tmp_file);
-	md"""
-	"""
+	d = Vector{Dict}()
+	set_str_act = ["coeur","coeur: oreillette",
+		"coeur ventricule","activation SA","activation propagée: oreillette","fin activation propagée: oreillette","activation AV","activation His",
+		"activation branches droites et gauches","activation fibres purkinje"]
+	for cnt in 1:10
+		nbfile = @sprintf("%02i",cnt)
+		url_load = url_part*"lab_cs_seq"*nbfile*".png"
+		tmp_file = download(url_load);
+		
+		#@printf("%02i\n",cnt)
+		push!(d, Dict(cnt => load(tmp_file)))
+		
+	end
+
 end
 
 
-# ╔═╡ e2e2f345-ede8-4193-a47b-fb6b3145ca31
-nbfile
+# ╔═╡ 2d3cff29-d44f-4c1f-a17c-830b765f0d11
+md"""
+Le graphique interactif ci-bas vous permet de visualiser la séquence d'activité sous-jacente à un battement cardiaque. """
+
+# ╔═╡ ece59e6a-50e8-49c0-8aa9-d1c6382bc2b1
+md""" $(@bind val_seq PlutoUI.Slider(1:length(d), default=1)) """
+
+# ╔═╡ becfddf9-68a9-4213-86a7-1ce1c4f923fc
+begin
+	ss = set_str_act[val_seq]
+	md"""		
+	#### $ss	"""
+end
+
+# ╔═╡ 761821ca-75cf-4ae5-86ea-30fc55dc9a71
+begin
+	tmp=collect(values(d[val_seq]))
+	plot(tmp[1],
+		xlim=(0,1500),
+		xticks = [],
+		yticks = [])
+end
 
 # ╔═╡ b62c4af8-9232-11eb-2f66-dd27dcb87d20
 md"""
@@ -1870,8 +1907,11 @@ version = "1.4.1+0"
 # ╟─bd3170e6-91ae-11eb-06f8-ebb6b2e7869f
 # ╟─a304c842-91df-11eb-3fac-6dd63087f6de
 # ╟─331d3cfa-003a-42d4-a498-fa904c5182db
-# ╠═b4da22a6-a4d4-4414-98f1-26f559df2c43
-# ╠═e2e2f345-ede8-4193-a47b-fb6b3145ca31
+# ╟─b4da22a6-a4d4-4414-98f1-26f559df2c43
+# ╟─2d3cff29-d44f-4c1f-a17c-830b765f0d11
+# ╟─ece59e6a-50e8-49c0-8aa9-d1c6382bc2b1
+# ╟─becfddf9-68a9-4213-86a7-1ce1c4f923fc
+# ╠═761821ca-75cf-4ae5-86ea-30fc55dc9a71
 # ╟─b62c4af8-9232-11eb-2f66-dd27dcb87d20
 # ╟─fedc3563-a0cf-4ab5-9643-c465a683661f
 # ╟─016c7884-a0cc-40c6-b5fc-93b2c30f667b
