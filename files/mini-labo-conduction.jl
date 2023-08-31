@@ -6,9 +6,10 @@ using InteractiveUtils
 
 # ╔═╡ 97e807b2-9237-11eb-31ef-6fe0d4cc94d3
 begin
-	using Plots, PlutoUI, Images, FileIO
+	using Plots, PlutoUI, Images, FileIO, Printf
 
 	url_seq = "https://jachereca.github.io/images/conduction-system-2022.png";
+	url_part = "https://jachereca.github.io/images/";
 	md""" 
 	"""
 end
@@ -94,12 +95,18 @@ $(Resource("https://jachereca.github.io/images/conduction-system-2022.png", :wid
 
 # ╔═╡ b4da22a6-a4d4-4414-98f1-26f559df2c43
 begin
-
+	cnt = 10;
+	nbfile = @sprintf("%02i",cnt)
+	url_load = url_part*"lab_cs_seq"
 	tmp_file = download(url_seq);
-img = load(tmp_file)
-
+	img = load(tmp_file);
+	md"""
+	"""
 end
 
+
+# ╔═╡ e2e2f345-ede8-4193-a47b-fb6b3145ca31
+nbfile
 
 # ╔═╡ b62c4af8-9232-11eb-2f66-dd27dcb87d20
 md"""
@@ -134,6 +141,7 @@ FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
 Images = "916415d5-f1e6-5110-898d-aaa5f9f070e0"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [compat]
 FileIO = "~1.16.1"
@@ -148,7 +156,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.9.3"
 manifest_format = "2.0"
-project_hash = "6a15fd0fd70eb0484aae42b0d1c33992bd396fbd"
+project_hash = "78d4bde2df6ce4dcf33595b987696800e0221ef9"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -1863,6 +1871,7 @@ version = "1.4.1+0"
 # ╟─a304c842-91df-11eb-3fac-6dd63087f6de
 # ╟─331d3cfa-003a-42d4-a498-fa904c5182db
 # ╠═b4da22a6-a4d4-4414-98f1-26f559df2c43
+# ╠═e2e2f345-ede8-4193-a47b-fb6b3145ca31
 # ╟─b62c4af8-9232-11eb-2f66-dd27dcb87d20
 # ╟─fedc3563-a0cf-4ab5-9643-c465a683661f
 # ╟─016c7884-a0cc-40c6-b5fc-93b2c30f667b
