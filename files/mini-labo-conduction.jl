@@ -106,10 +106,11 @@ $(Resource("https://jachereca.github.io/images/conduction-system-2022.png", :sty
 # ╔═╡ b4da22a6-a4d4-4414-98f1-26f559df2c43
 begin
 	d = Vector{Dict}()
-	set_str_act = ["coeur","coeur: oreillette",
-		"coeur ventricule","activation SA","activation propagée: oreillette","fin activation propagée: oreillette","activation AV","activation His",
-		"activation branches droites et gauches","activation fibres purkinje"]
-	for cnt in 1:10
+	set_str_act = ["Le coeur","Structure du coeur: oreillette",
+		"Structure du coeur: ventricule","1 - activation SA","2 - activation propagée: oreillette","3 - fin activation propagée: oreillette","4 - activation AV","5 - activation His",
+		"6 - activation branches droites et gauches","7 - activation fibres purkinje","8 - activation propagée: ventricule"]
+	set_t_act = [0.0 0.05 0.07 0.07 0.15 0.18 0.2 0.23]
+	for cnt in 1:11
 		nbfile = @sprintf("%02i",cnt)
 		url_load = url_part*"lab_cs_seq"*nbfile*".png"
 		tmp_file = download(url_load);
@@ -127,7 +128,11 @@ md"""
 Le graphique interactif ci-bas vous permet de visualiser la séquence d'activité sous-jacente à un battement cardiaque. """
 
 # ╔═╡ ece59e6a-50e8-49c0-8aa9-d1c6382bc2b1
-md""" $(@bind val_seq PlutoUI.Slider(1:length(d), default=1)) """
+@bind val_seq PlutoUI.Slider(1:length(d), default=1)
+
+
+# ╔═╡ 37cb5379-ff5b-4c95-8c8e-6605707f045b
+806.82+713.30
 
 # ╔═╡ becfddf9-68a9-4213-86a7-1ce1c4f923fc
 begin
@@ -140,9 +145,9 @@ end
 begin
 	tmp=collect(values(d[val_seq]))
 	plot(tmp[1],
-		xlim=(0,1500),
-		xticks = [],
-		yticks = [])
+		xlim=(0,1500)) #,
+		#xticks = [],
+		#yticks = [])
 end
 
 # ╔═╡ b62c4af8-9232-11eb-2f66-dd27dcb87d20
@@ -1910,8 +1915,9 @@ version = "1.4.1+0"
 # ╟─b4da22a6-a4d4-4414-98f1-26f559df2c43
 # ╟─2d3cff29-d44f-4c1f-a17c-830b765f0d11
 # ╟─ece59e6a-50e8-49c0-8aa9-d1c6382bc2b1
+# ╠═37cb5379-ff5b-4c95-8c8e-6605707f045b
 # ╟─becfddf9-68a9-4213-86a7-1ce1c4f923fc
-# ╠═761821ca-75cf-4ae5-86ea-30fc55dc9a71
+# ╟─761821ca-75cf-4ae5-86ea-30fc55dc9a71
 # ╟─b62c4af8-9232-11eb-2f66-dd27dcb87d20
 # ╟─fedc3563-a0cf-4ab5-9643-c465a683661f
 # ╟─016c7884-a0cc-40c6-b5fc-93b2c30f667b
