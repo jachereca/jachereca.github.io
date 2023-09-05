@@ -13,7 +13,6 @@ begin
 	Pkg.add("JSServe")
 	Pkg.add("JLD2")
 	Pkg.add("PlutoUI")
-	Pkg.add("Plots")
 	Pkg.add("Printf")
 	Pkg.add("LaTeXStrings")
 	#Pkg.add("DynamicalSystems")

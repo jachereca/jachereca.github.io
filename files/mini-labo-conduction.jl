@@ -131,9 +131,6 @@ Le graphique interactif ci-bas vous permet de visualiser la séquence d'activit�
 @bind val_seq PlutoUI.Slider(1:length(d), default=1)
 
 
-# ╔═╡ 37cb5379-ff5b-4c95-8c8e-6605707f045b
-806.82+713.30
-
 # ╔═╡ becfddf9-68a9-4213-86a7-1ce1c4f923fc
 begin
 	ss = set_str_act[val_seq]
@@ -1915,7 +1912,6 @@ version = "1.4.1+0"
 # ╟─b4da22a6-a4d4-4414-98f1-26f559df2c43
 # ╟─2d3cff29-d44f-4c1f-a17c-830b765f0d11
 # ╟─ece59e6a-50e8-49c0-8aa9-d1c6382bc2b1
-# ╠═37cb5379-ff5b-4c95-8c8e-6605707f045b
 # ╟─becfddf9-68a9-4213-86a7-1ce1c4f923fc
 # ╟─761821ca-75cf-4ae5-86ea-30fc55dc9a71
 # ╟─b62c4af8-9232-11eb-2f66-dd27dcb87d20
