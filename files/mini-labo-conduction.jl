@@ -149,12 +149,78 @@ end
 
 # ╔═╡ b62c4af8-9232-11eb-2f66-dd27dcb87d20
 md"""
-Si vous voyez apparaître des trajectoires aléatoires plus longues en augmentant **t** et moins grossières en augmentant **N**, votre installation est validée!
+
+#### Quelques questions pour le "plaisir"!
+
+Vous trouverez ci-bas une figure contenant de l'informations supplémentaires qui vous aidera à répondre aux questions.
+
 """
+
+# ╔═╡ b06dfb78-102f-4bb1-a011-e31ec9709e16
+md"""
+$(Resource("http://www.vhlab.umn.edu/atlas/conduction-system-tutorial/graphics/Fig02.gif", :style => "position:relative;top:0;left:0%;width:50%;height:50%;background-color:white;"))
+"""
+
+# ╔═╡ 8238787b-6edf-454a-9ead-8dad54fe52f8
+md"""
+##### Question 1
+Combien de temps approx. est nécessaire pour activer les oreillettes ?
+
+"""
+
+# ╔═╡ 230cb45a-e1f5-4e69-85c7-7509ca43d25d
+@bind Q1 TextField((75, 4), "Réponse:")
+
+# ╔═╡ 1a776844-b6e8-4242-a4bc-11dda37a0d1c
+md"""
+##### Question 2
+Combien de temps approx. est nécessaire pour activer les ventricules en vous basant sur le graphique au début de ce notebook ? Comment ce délai se compare-t'il avec le délai d'activation auriculo-ventriculaire ?
+"""
+
+# ╔═╡ d06c66b0-5551-44d0-a589-6c5259c77748
+@bind Q2 TextField((75, 4), "Réponse:")
+
+# ╔═╡ 9859b4c1-4952-4e24-9098-62fb920d074c
+md"""
+##### Question 3
+Expliquez en quelque mot ce qui se passerait si le noeud SA arrêtait de s'activer (aucune d'automaticité) ?
+"""
+
+# ╔═╡ 5fc11875-8aeb-4473-b960-74dd378fb1a5
+@bind Q3 TextField((75, 4), "Réponse:")
+
+# ╔═╡ 2e434490-6744-426e-99fc-85d8f4588f8a
+md"""
+##### Question 4
+Expliquez en quelque mot ce qui se passerait si le noeud SA arrêtait de s'activer (aucune d'automaticité) ?
+"""
+
+# ╔═╡ 173802df-0bce-44b1-9b61-cbc010368025
+@bind Q4 TextField((75, 4), "Réponse:")
+
+# ╔═╡ 8de3db09-88b4-433d-b5cc-e6c0273ab2f2
+md"""
+##### Question 5
+Expliquez en quelque mot ce qui se passerait si le noeud AV était endommagé (aucune activité d'automaticité et de conduction) ?
+"""
+
+# ╔═╡ 54903550-4538-4896-a5c0-4b7bc0227626
+@bind Q5 TextField((75, 4), "Réponse:")
+
+# ╔═╡ 4274c23e-599b-4d85-8aef-344b077c8e08
+md"""
+##### Question 6
+Vous avez la branche droite du faisceau de His qui est endommagé. Expliquez ce qui se passera au niveau des temps d'activation de l'ensemble des ventricules?
+"""
+
+# ╔═╡ fa7b9d4d-9abb-4b65-9cba-84ad7f3d8c8e
+@bind Q6 TextField((75, 4), "Réponse:")
 
 # ╔═╡ fedc3563-a0cf-4ab5-9643-c465a683661f
 md"""
 ## Terminée
+
+Sauvegarder une version PDF lorsque vous aurez terminé. Pour créer ce fichier, retournez en haut de ce notebook, cliquez sur l'icône d'un carré avec une flèche. Choississez l'option PDF et enregistré le fichier. Soumettez le PDF sur Brightspace
 """
 
 # ╔═╡ 016c7884-a0cc-40c6-b5fc-93b2c30f667b
@@ -1915,6 +1981,19 @@ version = "1.4.1+0"
 # ╟─becfddf9-68a9-4213-86a7-1ce1c4f923fc
 # ╟─761821ca-75cf-4ae5-86ea-30fc55dc9a71
 # ╟─b62c4af8-9232-11eb-2f66-dd27dcb87d20
+# ╟─b06dfb78-102f-4bb1-a011-e31ec9709e16
+# ╟─8238787b-6edf-454a-9ead-8dad54fe52f8
+# ╟─230cb45a-e1f5-4e69-85c7-7509ca43d25d
+# ╟─1a776844-b6e8-4242-a4bc-11dda37a0d1c
+# ╟─d06c66b0-5551-44d0-a589-6c5259c77748
+# ╟─9859b4c1-4952-4e24-9098-62fb920d074c
+# ╟─5fc11875-8aeb-4473-b960-74dd378fb1a5
+# ╟─2e434490-6744-426e-99fc-85d8f4588f8a
+# ╟─173802df-0bce-44b1-9b61-cbc010368025
+# ╟─8de3db09-88b4-433d-b5cc-e6c0273ab2f2
+# ╟─54903550-4538-4896-a5c0-4b7bc0227626
+# ╟─4274c23e-599b-4d85-8aef-344b077c8e08
+# ╟─fa7b9d4d-9abb-4b65-9cba-84ad7f3d8c8e
 # ╟─fedc3563-a0cf-4ab5-9643-c465a683661f
 # ╟─016c7884-a0cc-40c6-b5fc-93b2c30f667b
 # ╟─00000000-0000-0000-0000-000000000001
