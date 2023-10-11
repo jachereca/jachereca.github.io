@@ -189,18 +189,9 @@ Expliquez en quelque mot ce qui se passerait si le noeud SA arrêtait de s'activ
 # ╔═╡ 5fc11875-8aeb-4473-b960-74dd378fb1a5
 @bind Q3 TextField((75, 4), "Réponse:")
 
-# ╔═╡ 2e434490-6744-426e-99fc-85d8f4588f8a
-md"""
-##### Question 4
-Expliquez en quelque mot ce qui se passerait si le noeud SA arrêtait de s'activer (aucune d'automaticité) ?
-"""
-
-# ╔═╡ 173802df-0bce-44b1-9b61-cbc010368025
-@bind Q4 TextField((75, 4), "Réponse:")
-
 # ╔═╡ 8de3db09-88b4-433d-b5cc-e6c0273ab2f2
 md"""
-##### Question 5
+##### Question 4
 Expliquez en quelque mot ce qui se passerait si le noeud AV était endommagé (aucune activité d'automaticité et de conduction) ?
 """
 
@@ -209,7 +200,7 @@ Expliquez en quelque mot ce qui se passerait si le noeud AV était endommagé (a
 
 # ╔═╡ 4274c23e-599b-4d85-8aef-344b077c8e08
 md"""
-##### Question 6
+##### Question 5
 Vous avez la branche droite du faisceau de His qui est endommagé. Expliquez ce qui se passera au niveau des temps d'activation de l'ensemble des ventricules?
 """
 
@@ -218,7 +209,7 @@ Vous avez la branche droite du faisceau de His qui est endommagé. Expliquez ce 
 
 # ╔═╡ fedc3563-a0cf-4ab5-9643-c465a683661f
 md"""
-## Terminée
+## Terminé
 
 Sauvegarder une version PDF lorsque vous aurez terminé. Pour créer ce fichier, retournez en haut de ce notebook, cliquez sur l'icône d'un carré avec une flèche. Choississez l'option PDF et enregistré le fichier. Soumettez le PDF sur Brightspace
 """
@@ -1988,8 +1979,6 @@ version = "1.4.1+0"
 # ╟─d06c66b0-5551-44d0-a589-6c5259c77748
 # ╟─9859b4c1-4952-4e24-9098-62fb920d074c
 # ╟─5fc11875-8aeb-4473-b960-74dd378fb1a5
-# ╟─2e434490-6744-426e-99fc-85d8f4588f8a
-# ╟─173802df-0bce-44b1-9b61-cbc010368025
 # ╟─8de3db09-88b4-433d-b5cc-e6c0273ab2f2
 # ╟─54903550-4538-4896-a5c0-4b7bc0227626
 # ╟─4274c23e-599b-4d85-8aef-344b077c8e08
